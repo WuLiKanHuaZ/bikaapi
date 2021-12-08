@@ -44,4 +44,6 @@ dependencies {
     api 'com.google.code.gson:gson:2.8.9'
 
     api 'com.github.goldze:MVVMHabit:4.0.0'
+
+    api 'com.gyf.immersionbar:immersionbar:3.0.0'
 }
