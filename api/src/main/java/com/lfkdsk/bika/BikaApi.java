@@ -15,6 +15,7 @@ package com.lfkdsk.bika;/*
  * limitations under the License.
  */
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -26,6 +27,9 @@ import com.lfkdsk.bika.response.*;
 import com.lfkdsk.bika.utils.BikaJni;
 import com.lfkdsk.bika.utils.HttpDns;
 
+import me.goldze.mvvmhabit.http.interceptor.logging.Logger;
+import me.goldze.mvvmhabit.http.interceptor.logging.LoggingInterceptor;
+import me.goldze.mvvmhabit.utils.SPUtils;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -71,7 +75,7 @@ public final class BikaApi extends BaseRetrofitManager<BiKaApiService> {
                             .header("accept", "application/vnd.picacomic.com.v1+json")
                             .header("app-channel", "2")
                             .header("time", time)
-                            .header("authorization", token)
+                            .header("authorization", getToken())
                             .header("nonce", uid)
                             .header("signature", signature)
                             .header("app-version", version)
@@ -103,6 +107,11 @@ public final class BikaApi extends BaseRetrofitManager<BiKaApiService> {
                 .readTimeout(50, TimeUnit.SECONDS);
         builder.dns(new HttpDns());
         builder.addInterceptor(new BiKaIntercept());
+
+        LoggingInterceptor loggingInterceptor = new LoggingInterceptor.Builder()
+                .logger(Logger.DEFAULT)
+                .build();
+        builder.addInterceptor(loggingInterceptor);
         for (Interceptor interceptor : interceptors) {
             builder.addInterceptor(interceptor);
         }
@@ -123,6 +132,10 @@ public final class BikaApi extends BaseRetrofitManager<BiKaApiService> {
         }
 
         return Collections.emptyList();
+    }
+
+    public Call<GeneralResponse<CategoryResponse>> getCategories(){
+        return this.getApi().getCategories(token);
     }
 
     public Call<GeneralResponse<SignInResponse>> signInCall(String name, String password){
@@ -240,9 +253,13 @@ public final class BikaApi extends BaseRetrofitManager<BiKaApiService> {
 
     public void setToken(String token) {
         this.token = token;
+        SPUtils.getInstance().put("token",token);
     }
 
     public String getToken() {
+        if (TextUtils.isEmpty(token)){
+            token = SPUtils.getInstance().getString("token");
+        }
         return token;
     }
 

@@ -9,6 +9,7 @@ import com.hjq.http.EasyConfig;
 import com.lfkdsk.bika.BikaApi;
 
 import me.goldze.mvvmhabit.base.BaseApplication;
+import me.goldze.mvvmhabit.utils.KLog;
 import okhttp3.OkHttpClient;
 
 
@@ -19,9 +20,9 @@ public class PiCaApp extends Application {
         super.onCreate();
 
         BaseApplication.setApplication(this);
+        KLog.init(true);
 
-        OkHttpClient.Builder builder  = new OkHttpClient.Builder();
-        builder.addInterceptor(new PiCaInterceptor());
+        BikaApi.getInstance().initClient();
     }
 
 
